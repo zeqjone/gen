@@ -73,10 +73,16 @@ func SaveGoStruct(tbls []*repo.Table) {
 	str.WriteString(fmt.Sprintf("package %s\n", cfg.Gocfg.Namespace))
 	for _, t := range tbls {
 		fmt.Printf("t:%s\n", t.Name)
-		if utils.Has(cfg.Mysql.Tables, t.Name) {
+		if len(cfg.Mysql.Tables) == 0 || utils.Has(cfg.Mysql.Tables, t.Name) {
 			str.WriteString(fmt.Sprintf("type %s struct {\n", utils.Snake2Pascal(t.Name)))
 			for _, c := range t.Cols {
-				str.WriteString(fmt.Sprintf("%s %s `json:\"%s\"` // %s\n", utils.Snake2Pascal(c.Name), repo.GetGoType(c.Type), c.Name, c.Comment))
+				var cs string
+				if c.Comment != "" {
+					cs = fmt.Sprintf("%s %s `json:\"%s\"` // %s\n", utils.Snake2Pascal(c.Name), repo.GetGoType(c.Type), c.Name, c.Comment)
+				} else {
+					cs = fmt.Sprintf("%s %s `json:\"%s\"`\n", utils.Snake2Pascal(c.Name), repo.GetGoType(c.Type), c.Name)
+				}
+				str.WriteString(cs)
 			}
 			str.WriteString("}\n")
 		}
