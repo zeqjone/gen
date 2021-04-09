@@ -7,6 +7,8 @@ dsn = "root:123456@tcp(127.0.0.1:3306)/rdc_manager?parseTime=true&loc=Local"
 db = "rdc_manager"
 # 指定导出的表的名字
 tables = []
+# 支持的ORM
+orm = "gorm"
 
 [gocfg]
 # 导出的模型的命名空间

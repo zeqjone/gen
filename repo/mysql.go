@@ -9,10 +9,18 @@ import (
 
 var db *sql.DB
 
+type GenOrm string
+
+var (
+	GenOrmGorm  GenOrm = "gorm"
+	GenOrmBeego GenOrm = "beego"
+)
+
 type MysqlCfg struct {
 	Dsn    string
 	Db     string
 	Tables []string
+	Orm    GenOrm
 }
 
 func NewDB(cfg *MysqlCfg) {

@@ -76,12 +76,7 @@ func SaveGoStruct(tbls []*repo.Table) {
 		if len(cfg.Mysql.Tables) == 0 || utils.Has(cfg.Mysql.Tables, t.Name) {
 			str.WriteString(fmt.Sprintf("type %s struct {\n", utils.Snake2Pascal(t.Name)))
 			for _, c := range t.Cols {
-				var cs string
-				if c.Comment != "" {
-					cs = fmt.Sprintf("%s %s `json:\"%s\"` // %s\n", utils.Snake2Pascal(c.Name), repo.GetGoType(c.Type), c.Name, c.Comment)
-				} else {
-					cs = fmt.Sprintf("%s %s `json:\"%s\"`\n", utils.Snake2Pascal(c.Name), repo.GetGoType(c.Type), c.Name)
-				}
+				cs := GetColDesp(c)
 				str.WriteString(cs)
 			}
 			str.WriteString("}\n")
@@ -94,4 +89,27 @@ func SaveGoStruct(tbls []*repo.Table) {
 	defer f.Close()
 	f.WriteString(str.String())
 	fmt.Println("table model file finished")
+}
+
+func GetColDesp(col repo.Column) string {
+	cs := ""
+	if cfg.Mysql.Orm == repo.GenOrmGorm {
+		colName := utils.Snake2Pascal(col.Name)
+		if colName == "Id" {
+			colName = "ID"
+		}
+		tagGorm := ""
+		if strings.ToLower(col.Key) == "pri" {
+			tagGorm = fmt.Sprintf(`gorm:"%scolumn:%s"`, "primaryKey;", col.Name)
+		} else {
+			tagGorm = fmt.Sprintf(`gorm:"%scolumn:%s"`, "", col.Name)
+		}
+		jsonName := utils.Camel2Snake(col.Name)
+		if col.Comment != "" {
+			cs = fmt.Sprintf("%s %s `json:\"%s\" %s` // %s\n", colName, repo.GetGoType(col.Type), jsonName, tagGorm, col.Comment)
+		} else {
+			cs = fmt.Sprintf("%s %s `json:\"%s\" %s` \n", colName, repo.GetGoType(col.Type), jsonName, tagGorm)
+		}
+	}
+	return cs
 }
