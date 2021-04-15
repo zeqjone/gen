@@ -67,7 +67,7 @@ func fmtTableModel(f string) {
 func SaveGoStruct(tbls []*repo.Table) {
 	str := &strings.Builder{}
 	str.WriteString(fmt.Sprintf("// desc: code generate by tools\n"))
-	str.WriteString(fmt.Sprintf("// github: \n"))
+	str.WriteString(fmt.Sprintf("// github: https://github.com/zeqjone/gen.git\n"))
 	str.WriteString(fmt.Sprintf("// mail: zeq_jone@163.com\n"))
 	str.WriteString(fmt.Sprintf("// version: v1.0.0\n\n"))
 	str.WriteString(fmt.Sprintf("package %s\n", cfg.Gocfg.Namespace))
@@ -99,8 +99,10 @@ func GetColDesp(col repo.Column) string {
 			colName = "ID"
 		}
 		tagGorm := ""
-		if strings.ToLower(col.Key) == "pri" {
+		if strings.ToLower(col.Key) == "pri" || strings.ToLower(col.Key) == "mul" {
 			tagGorm = fmt.Sprintf(`gorm:"%scolumn:%s"`, "primaryKey;", col.Name)
+		} else if strings.ToLower(col.Key) == "uni" {
+			tagGorm = fmt.Sprintf(`gorm:"%scolumn:%s"`, "unique;", col.Name)
 		} else {
 			tagGorm = fmt.Sprintf(`gorm:"%scolumn:%s"`, "", col.Name)
 		}

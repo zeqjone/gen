@@ -14,4 +14,4 @@ orm = "gorm"
 # 导出的模型的命名空间
 namespace = "table"
 # 导出的文件的路径
-path = "table/table.go"
+path = "table/db.go"
