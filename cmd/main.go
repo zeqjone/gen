@@ -43,12 +43,9 @@ func init() {
 func main() {
 	// 初始化数据库
 	repo.NewDB(&cfg.Mysql)
-	tns := repo.GetAllTables(cfg.Mysql.Db)
-	fmt.Printf("tns: %v", tns)
-	var tbls []*repo.Table
-	for _, t := range tns {
-		tbl := repo.GetTable(cfg.Mysql.Db, t)
-		tbls = append(tbls, tbl)
+	tbls := repo.GetAllTables(cfg.Mysql.Db)
+	for _, t := range tbls {
+		repo.GetTable(cfg.Mysql.Db, t)
 	}
 	SaveGoStruct(tbls)
 	fmt.Println("waiting for fmt")
@@ -74,12 +71,16 @@ func SaveGoStruct(tbls []*repo.Table) {
 	for _, t := range tbls {
 		fmt.Printf("t:%s\n", t.Name)
 		if len(cfg.Mysql.Tables) == 0 || utils.Has(cfg.Mysql.Tables, t.Name) {
-			str.WriteString(fmt.Sprintf("type %s struct {\n", utils.Snake2Pascal(t.Name)))
+			pascalName := utils.Snake2Pascal(t.Name)
+			str.WriteString(fmt.Sprintf("// %s %s\n", pascalName, t.Comment))
+			str.WriteString(fmt.Sprintf("type %s struct {\n", pascalName))
 			for _, c := range t.Cols {
 				cs := GetColDesp(c)
 				str.WriteString(cs)
 			}
 			str.WriteString("}\n")
+			strFunc := GetTableNameFunc(t.Name)
+			str.WriteString(strFunc)
 		}
 	}
 	f, err := os.Create(cfg.Gocfg.Path)
@@ -114,4 +115,8 @@ func GetColDesp(col repo.Column) string {
 		}
 	}
 	return cs
+}
+
+func GetTableNameFunc(tn string) string {
+	return fmt.Sprintf("func (ins *%s) TableName () string {\n return \"%s\"\n}\n", utils.Snake2Pascal(tn), tn)
 }

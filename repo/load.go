@@ -6,8 +6,9 @@ import (
 )
 
 type Table struct {
-	Name string
-	Cols []Column
+	Name    string
+	Comment string
+	Cols    []Column
 }
 
 type Column struct {
@@ -19,28 +20,27 @@ type Column struct {
 }
 
 // GetAllTables 获取数据库里的所有的表
-func GetAllTables(dbname string) []string {
-	sql := "select table_name from information_schema.tables where table_schema = ?"
+func GetAllTables(dbname string) []*Table {
+	sql := "select table_name, table_comment from information_schema.tables where table_schema = ?"
 	rows, err := db.Query(sql, dbname)
 	if err != nil {
 		panic(fmt.Errorf("GetAllTables err: %v", err))
 	}
-	var tbls []string
+	var tbls []*Table
 	for rows.Next() {
-		var tn string
-		rows.Scan(&tn)
-		tbls = append(tbls, tn)
+		var tn, tc string
+		rows.Scan(&tn, &tc)
+		tbls = append(tbls, &Table{Name: tn, Comment: tc})
 	}
 	return tbls
 }
 
-func GetTable(dbname, tablename string) *Table {
+func GetTable(dbname string, tbl *Table) {
 	sql := "select column_name, Data_type, character_maximum_length,column_key,column_comment from information_schema.columns where table_schema = ? and  table_name = ?"
-	rows, err := db.Query(sql, dbname, tablename)
+	rows, err := db.Query(sql, dbname, tbl.Name)
 	if err != nil {
 		panic(fmt.Errorf("GetAllTables err: %v", err))
 	}
-	var tbl = &Table{Name: tablename}
 	for rows.Next() {
 		var name, dataType, len, key, comment string
 		rows.Scan(&name, &dataType, &len, &key, &comment)
@@ -57,5 +57,4 @@ func GetTable(dbname, tablename string) *Table {
 		}
 		tbl.Cols = append(tbl.Cols, *col)
 	}
-	return tbl
 }
