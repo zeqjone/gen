@@ -26,19 +26,6 @@ type Cfg struct {
 	Gocfg GoCfg
 }
 
-// func init() {
-// 	flag.StringVar(&conf, "conf", "cmd/default.toml", "配置文件地址")
-// 	flag.Parse()
-// 	if conf == "" {
-// 		panic("conf 参数不能为空")
-// 	}
-// 	_, err := toml.DecodeFile(conf, &cfg)
-// 	if err != nil {
-// 		fmt.Printf("toml decode error %v", err)
-// 	}
-// 	fmt.Printf("\n%v\n", cfg)
-// }
-
 func init() {
 
 }
