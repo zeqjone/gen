@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"gen/conf"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -21,9 +22,18 @@ var initCmd = &cobra.Command{
 }
 
 func init() {
-	viper.SetDefault("dsn", "root:123456@tcp(127.0.0.1:3306)/rdc_manager?parseTime=true&loc=Local")
-	viper.SetDefault("tabels", "")
-	initCmd.Flags().StringP("dsn", "c", "mysql connection config", "to connect mysql for getting the structrue of db")
-	viper.BindPFlag("dsn", initCmd.Flags().Lookup("dsn"))
+	initCmd.Flags().StringP(conf.MysqlDsn, "c", "mysql connection config", "to connect mysql for getting the structrue of db")
+	viper.BindPFlag(conf.MysqlDsn, initCmd.Flags().Lookup(conf.MysqlDsn))
+	initCmd.Flags().StringP(conf.MysqlTables, "t", "", "to connect mysql for getting the structrue of db")
+	viper.BindPFlag(conf.MysqlTables, initCmd.Flags().Lookup(conf.MysqlTables))
+
+	initCmd.Flags().StringP(conf.OutputDir, "d", "table", "指定 go structure 存放路径")
+	viper.BindPFlag(conf.OutputDir, initCmd.Flags().Lookup(conf.OutputDir))
+	initCmd.Flags().StringP(conf.OutputNameSpace, "n", "table", "指定 go structure 文件的命名空间")
+	viper.BindPFlag(conf.OutputNameSpace, initCmd.Flags().Lookup(conf.OutputNameSpace))
+
+	initCmd.Flags().StringP(conf.MysqlOrm, "m", "gorm", "指定驱动mysql 的orm，支持 gorm、 beego")
+	viper.BindPFlag(conf.MysqlOrm, initCmd.Flags().Lookup(conf.MysqlOrm))
+
 	rootCmd.AddCommand(initCmd)
 }

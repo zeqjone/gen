@@ -6,7 +6,6 @@
 
 - 下载源代码
 - 如果本地没有 goimports, 则请下载 ```go get -u golang.org/x/tools/cmd/goimports```
-- 修改 cmd/default.toml 配置文件
 - 命令行运行 main.go 文件
 
 ## 版本规划

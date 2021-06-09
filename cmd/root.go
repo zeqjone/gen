@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"gen/conf"
 	"gen/lib/utils"
 	"gen/repo"
 	"os"
@@ -14,8 +15,6 @@ import (
 )
 
 var (
-	conf    string
-	cfg     = &Cfg{}
 	cfgFile = ""
 )
 
@@ -38,7 +37,6 @@ func initConfig() {
 	if cfgFile == "" {
 		home, err := homedir.Dir()
 		cobra.CheckErr(err)
-		fmt.Println(home)
 		viper.AddConfigPath(home)
 		viper.SetConfigName("cobra")
 		viper.SetConfigType("yaml")
@@ -51,9 +49,26 @@ func initConfig() {
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Printf("Using config file: %s", viper.ConfigFileUsed())
+		fmt.Printf("Using config file: %s\n", viper.ConfigFileUsed())
+		f, err := os.Open(viper.ConfigFileUsed())
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		err = viper.ReadConfig(f)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
+		dsn := viper.GetString(conf.MysqlDsn)
+		if dsn == "" {
+			fmt.Println("第一次使用请先指定 gen init 配置数据库连接字符串， 否则不能使用")
+			return
+		}
+		repo.NewDB(&repo.MysqlCfg{
+			Dsn: dsn,
+		})
 	} else {
-		fmt.Println(222)
 		fmt.Println(err.Error())
 	}
 }
@@ -72,16 +87,6 @@ func Execute() {
 		fmt.Fprintln(os.Stdout, err)
 		os.Exit(1)
 	}
-	// 初始化数据库
-	// repo.NewDB(&cfg.Mysql)
-	// tbls := repo.GetAllTables(cfg.Mysql.Db)
-	// for _, t := range tbls {
-	// 	repo.GetTable(cfg.Mysql.Db, t)
-	// }
-	// SaveGoStruct(tbls)
-	// fmt.Println("waiting for fmt")
-	// fmtTableModel(cfg.Gocfg.Path)
-	// fmt.Println("fmt for finished")
 }
 
 func fmtTableModel(f string) {
@@ -98,23 +103,23 @@ func SaveGoStruct(tbls []*repo.Table) {
 	str.WriteString(fmt.Sprintf("// github: https://github.com/zeqjone/gen.git\n"))
 	str.WriteString(fmt.Sprintf("// mail: zeq_jone@163.com\n"))
 	str.WriteString(fmt.Sprintf("// version: v1.0.0\n\n"))
-	str.WriteString(fmt.Sprintf("package %s\n", cfg.Gocfg.Namespace))
+	str.WriteString(fmt.Sprintf("package %s\n", viper.GetString(conf.OutputNameSpace)))
 	for _, t := range tbls {
 		fmt.Printf("t:%s\n", t.Name)
-		if len(cfg.Mysql.Tables) == 0 || utils.Has(cfg.Mysql.Tables, t.Name) {
-			pascalName := utils.Snake2Pascal(t.Name)
-			str.WriteString(fmt.Sprintf("// %s %s\n", pascalName, t.Comment))
-			str.WriteString(fmt.Sprintf("type %s struct {\n", pascalName))
-			for _, c := range t.Cols {
-				cs := GetColDesp(c)
-				str.WriteString(cs)
-			}
-			str.WriteString("}\n")
-			strFunc := GetTableNameFunc(t.Name)
-			str.WriteString(strFunc)
+		pascalName := utils.Snake2Pascal(t.Name)
+		str.WriteString(fmt.Sprintf("// %s %s\n", pascalName, t.Comment))
+		str.WriteString(fmt.Sprintf("type %s struct {\n", pascalName))
+		for _, c := range t.Cols {
+			cs := GetColDesp(c)
+			str.WriteString(cs)
 		}
+		str.WriteString("}\n")
+		strFunc := GetTableNameFunc(t.Name)
+		str.WriteString(strFunc)
 	}
-	f, err := os.Create(cfg.Gocfg.Path)
+	d := viper.GetString(conf.OutputDir)
+	fname := viper.GetString(conf.OutputNameSpace)
+	f, err := os.Create(fmt.Sprintf("%s/%s.go", d, fname))
 	if err != nil {
 		panic(fmt.Errorf("创建文件失败：%v", err))
 	}
@@ -125,7 +130,9 @@ func SaveGoStruct(tbls []*repo.Table) {
 
 func GetColDesp(col repo.Column) string {
 	cs := ""
-	if cfg.Mysql.Orm == repo.GenOrmGorm {
+	orm := viper.GetString(conf.MysqlOrm)
+	fmt.Println(orm, col)
+	if repo.GenOrm(orm) == repo.GenOrmGorm {
 		colName := utils.Snake2Pascal(col.Name)
 		if colName == "Id" {
 			colName = "ID"
