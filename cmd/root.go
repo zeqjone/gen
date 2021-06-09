@@ -8,12 +8,15 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
-	conf string
-	cfg  = &Cfg{}
+	conf    string
+	cfg     = &Cfg{}
+	cfgFile = ""
 )
 
 type GoCfg struct {
@@ -27,7 +30,32 @@ type Cfg struct {
 }
 
 func init() {
+	cobra.OnInitialize(initConfig)
 
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "cfgfile", "", "设置配置文件地址，默认在用户home目录下")
+}
+func initConfig() {
+	if cfgFile == "" {
+		home, err := homedir.Dir()
+		cobra.CheckErr(err)
+		fmt.Println(home)
+		viper.AddConfigPath(home)
+		viper.SetConfigName("cobra")
+		viper.SetConfigType("yaml")
+	} else {
+		// use config file from flags
+		viper.SetConfigFile(cfgFile)
+		viper.SetConfigType("yaml")
+	}
+
+	viper.AutomaticEnv()
+
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Printf("Using config file: %s", viper.ConfigFileUsed())
+	} else {
+		fmt.Println(222)
+		fmt.Println(err.Error())
+	}
 }
 
 var rootCmd = &cobra.Command{
