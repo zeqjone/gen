@@ -1,4 +1,4 @@
-module gen
+module gitee/zeqjone/gen
 
 go 1.15
 

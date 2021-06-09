@@ -1,6 +1,6 @@
 package main
 
-import "gen/cmd"
+import "gitee/zeqjone/gen/cmd"
 
 func main() {
 	cmd.Execute()

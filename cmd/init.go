@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"gen/conf"
+	"gitee/zeqjone/gen/conf"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -22,7 +22,7 @@ var initCmd = &cobra.Command{
 }
 
 func init() {
-	initCmd.Flags().StringP(conf.MysqlDsn, "c", "mysql connection config", "to connect mysql for getting the structrue of db")
+	initCmd.Flags().StringP(conf.MysqlDsn, "c", "root:123456@tcp(127.0.0.1:3306)/test", "to connect mysql for getting the structrue of db")
 	viper.BindPFlag(conf.MysqlDsn, initCmd.Flags().Lookup(conf.MysqlDsn))
 	initCmd.Flags().StringP(conf.MysqlTables, "t", "", "to connect mysql for getting the structrue of db")
 	viper.BindPFlag(conf.MysqlTables, initCmd.Flags().Lookup(conf.MysqlTables))

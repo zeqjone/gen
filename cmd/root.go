@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"gen/conf"
-	"gen/lib/utils"
-	"gen/repo"
+	"gitee/zeqjone/gen/conf"
+	"gitee/zeqjone/gen/lib/utils"
+	"gitee/zeqjone/gen/repo"
 	"os"
 	"os/exec"
 	"strings"

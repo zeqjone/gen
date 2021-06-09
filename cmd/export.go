@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"gen/conf"
-	"gen/repo"
+	"gitee/zeqjone/gen/conf"
+	"gitee/zeqjone/gen/repo"
 	"strings"
 
 	"github.com/spf13/cobra"
