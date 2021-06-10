@@ -14,6 +14,7 @@ var initCmd = &cobra.Command{
 	Long:  "init gen with project config, such as db,output dir etc",
 	Run: func(c *cobra.Command, args []string) {
 		fmt.Printf("init args: %v\n", viper.GetString("dsn"))
+		// 将配置写入配置文件
 		err := viper.WriteConfig()
 		if err != nil {
 			fmt.Println(err)

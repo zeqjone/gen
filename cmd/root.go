@@ -1,12 +1,14 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"gitee/zeqjone/gen/conf"
 	"gitee/zeqjone/gen/lib/utils"
 	"gitee/zeqjone/gen/repo"
 	"os"
 	"os/exec"
+	"path"
 	"strings"
 
 	"github.com/mitchellh/go-homedir"
@@ -18,16 +20,6 @@ var (
 	cfgFile = ""
 )
 
-type GoCfg struct {
-	Namespace string
-	Path      string
-}
-
-type Cfg struct {
-	Mysql repo.MysqlCfg
-	Gocfg GoCfg
-}
-
 func init() {
 	cobra.OnInitialize(initConfig)
 
@@ -38,8 +30,22 @@ func initConfig() {
 		home, err := homedir.Dir()
 		cobra.CheckErr(err)
 		viper.AddConfigPath(home)
-		viper.SetConfigName("cobra")
+		viper.SetConfigName("gen")
 		viper.SetConfigType("yaml")
+
+		_, err = os.Open(path.Join(home, "gen"))
+		if err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				_, err := os.Create(path.Join(home, "gen"))
+				if err != nil {
+					fmt.Println(err)
+				}
+			}
+			if errors.Is(err, os.ErrPermission) {
+				fmt.Printf("当前账户创建 %s 权限不足", path.Join(home, "gen"))
+				return
+			}
+		}
 	} else {
 		// use config file from flags
 		viper.SetConfigFile(cfgFile)

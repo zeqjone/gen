@@ -28,6 +28,7 @@ var exportCmd = &cobra.Command{
 		if tables != "" {
 			tbls = strings.Split(tables, ",")
 		}
+		fmt.Println(tbls)
 		allTbls := repo.GetAllTables(db)
 		var inTbls []*repo.Table
 		if len(tbls) > 0 {
