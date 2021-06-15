@@ -6,6 +6,7 @@ import (
 	"gitee/zeqjone/gen/repo"
 	"strings"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -24,11 +25,17 @@ var exportCmd = &cobra.Command{
 			return
 		}
 		tbls := viper.GetStringSlice(conf.MysqlTables)
-		fmt.Println(tbls)
 		if tables != "" {
 			tbls = strings.Split(tables, ",")
 		}
-		fmt.Println(tbls)
+		var connstr = viper.GetString(conf.MysqlDsn)
+		if connstr != "" {
+			c, err := mysql.ParseDSN(connstr)
+			if err != nil {
+				fmt.Printf("dsn error: %v", err)
+			}
+			db = c.DBName
+		}
 		allTbls := repo.GetAllTables(db)
 		var inTbls []*repo.Table
 		if len(tbls) > 0 {
@@ -57,4 +64,5 @@ func init() {
 
 	exportCmd.Flags().StringVarP(&tables, "table", "t", "", "指定表导出")
 	exportCmd.Flags().StringVarP(&db, "dbname", "n", "", "指定数据库导出")
+
 }
