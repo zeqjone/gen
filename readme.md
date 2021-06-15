@@ -6,7 +6,8 @@
 
 - 下载源代码
 - 如果本地没有 goimports, 则请下载 ```go get -u golang.org/x/tools/cmd/goimports```
-- 命令行运行 main.go 文件
+- 执行 ```go build -o gen main.go``` 构建可执行文件
+- ```gen -h``` 查看指令集
 
 ## 版本规划
 
