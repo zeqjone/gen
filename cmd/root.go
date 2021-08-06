@@ -105,10 +105,8 @@ func fmtTableModel(f string) {
 
 func SaveGoStruct(tbls []*repo.Table) {
 	str := &strings.Builder{}
-	str.WriteString(fmt.Sprintf("// desc: code generate by tools\n"))
-	str.WriteString(fmt.Sprintf("// github: https://github.com/zeqjone/gen.git\n"))
-	str.WriteString(fmt.Sprintf("// mail: zeq_jone@163.com\n"))
-	str.WriteString(fmt.Sprintf("// version: v1.0.0\n\n"))
+	str.WriteString("// desc: code generate by tools\n")
+	str.WriteString("// version: v1.0.0\n\n")
 	str.WriteString(fmt.Sprintf("package %s\n", viper.GetString(conf.OutputNameSpace)))
 	for _, t := range tbls {
 		fmt.Printf("t:%s\n", t.Name)
@@ -152,15 +150,18 @@ func GetColDesp(col repo.Column) string {
 			tagGorm = fmt.Sprintf(`gorm:"%scolumn:%s"`, "", col.Name)
 		}
 		jsonName := utils.Camel2Snake(col.Name)
+		cs = fmt.Sprintf("%s %s `json:\"%s\" %s`", colName, repo.GetGoType(col.Type), jsonName, tagGorm)
 		if col.Comment != "" {
-			cs = fmt.Sprintf("%s %s `json:\"%s\" %s` // %s\n", colName, repo.GetGoType(col.Type), jsonName, tagGorm, col.Comment)
+			cs += fmt.Sprintf(" // %s\n", col.Comment)
 		} else {
-			cs = fmt.Sprintf("%s %s `json:\"%s\" %s` \n", colName, repo.GetGoType(col.Type), jsonName, tagGorm)
+			cs += "\n"
 		}
 	}
 	return cs
 }
 
 func GetTableNameFunc(tn string) string {
-	return fmt.Sprintf("func (ins *%s) TableName () string {\n return \"%s\"\n}\n", utils.Snake2Pascal(tn), tn)
+	funcTn := fmt.Sprintf("func (ins *%s) TableName () string {\n return \"%s\"\n}\n", utils.Snake2Pascal(tn), tn)
+	funcPk := fmt.Sprintf("func(ins *%s) {}\n", tn)
+	return fmt.Sprintf("%s%s", funcTn, funcPk)
 }
