@@ -74,6 +74,9 @@ func initConfig() {
 			return
 		}
 		fmt.Println("正在使用的数据库连接信息：", dsn)
+		repo.NewDB(&repo.MysqlCfg{
+			Dsn: dsn,
+		})
 	} else {
 		fmt.Println(err.Error())
 	}
@@ -120,7 +123,7 @@ func SaveGoStruct(tbls []*repo.Table) {
 			str.WriteString(cs)
 		}
 		str.WriteString("}\n")
-		strFunc := GetTableNameFunc(t.Name)
+		strFunc := GetTableNameFunc(t)
 		str.WriteString(strFunc)
 	}
 	d := viper.GetString(conf.OutputDir)
@@ -144,16 +147,16 @@ func GetColDesp(col repo.Column) string {
 		if colName == "Id" {
 			colName = "ID"
 		}
-		tagGorm := ""
-		if strings.ToLower(col.Key) == "pri" || strings.ToLower(col.Key) == "mul" {
-			tagGorm = fmt.Sprintf(`gorm:"%scolumn:%s"`, "primaryKey;", col.Name)
+		tags := ""
+		if strings.ToLower(col.Key) == "pri" {
+			tags = fmt.Sprintf(`gorm:"%scolumn:%s" column:"%s"`, "primaryKey;", col.Name, col.Name)
 		} else if strings.ToLower(col.Key) == "uni" {
-			tagGorm = fmt.Sprintf(`gorm:"%scolumn:%s"`, "unique;", col.Name)
+			tags = fmt.Sprintf(`gorm:"%scolumn:%s" column:"%s"`, "unique;", col.Name, col.Name)
 		} else {
-			tagGorm = fmt.Sprintf(`gorm:"%scolumn:%s"`, "", col.Name)
+			tags = fmt.Sprintf(`gorm:"%scolumn:%s" column:"%s"`, "", col.Name, col.Name)
 		}
 		jsonName := utils.Camel2Snake(col.Name)
-		cs = fmt.Sprintf("%s %s `json:\"%s\" %s`", colName, repo.GetGoType(col.Type), jsonName, tagGorm)
+		cs = fmt.Sprintf("%s %s `json:\"%s\" %s`", colName, repo.GetGoType(col.Type), jsonName, tags)
 		if col.Comment != "" {
 			cs += fmt.Sprintf(" // %s\n", col.Comment)
 		} else {
@@ -164,8 +167,19 @@ func GetColDesp(col repo.Column) string {
 }
 
 // GetTableNameFunc 生成的结构体方法
-func GetTableNameFunc(tn string) string {
-	funcTn := fmt.Sprintf("func (ins *%s) TableName () string {\n return \"%s\"\n}\n", utils.Snake2Pascal(tn), tn)
-	funcPk := fmt.Sprintf("func(ins *%s) {}\n", tn)
-	return fmt.Sprintf("%s%s", funcTn, funcPk)
+func GetTableNameFunc(t *repo.Table) string {
+	tablename := fmt.Sprintf("func (ins *%s) TableName () string {\n return \"%s\"\n}", utils.Snake2Pascal(t.Name), t.Name)
+	getTableName := fmt.Sprintf("func(ins *%s) GetTableName()string{\n return \"%s\"\n}", utils.Snake2Pascal(t.Name), strings.ToUpper(t.Name))
+	pks := make([]string, 0)
+	for _, c := range t.Pks {
+		pks = append(pks, c.Name)
+	}
+	pk := strings.Join(pks, ",")
+	if pk == "" {
+		pk = "id"
+	}
+	// todo: 如果是组合主键，改怎么返回？
+	getPKColumnName := fmt.Sprintf("func(ins *%s) GetPKColumnName()string{\n return \"%s\"\n}", utils.Snake2Pascal(t.Name), pk)
+	getPkSequence := fmt.Sprintf("func(ins *%s) GetPkSequence()map[string]string{\n return nil\n}", utils.Snake2Pascal(t.Name))
+	return fmt.Sprintf("%s\n%s\n%s\n%s\n", tablename, getTableName, getPKColumnName, getPkSequence)
 }

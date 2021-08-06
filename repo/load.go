@@ -9,6 +9,7 @@ type Table struct {
 	Name    string
 	Comment string
 	Cols    []Column
+	Pks     []Column
 }
 
 type Column struct {
@@ -37,7 +38,7 @@ func GetAllTables(dbname string) []*Table {
 
 // GetTable 得到表的信息
 func GetTable(dbname string, tbl *Table) {
-	sql := "select column_name, Data_type, character_maximum_length,column_key,convert(column_comment using utf8) COLLATE utf8_bin from information_schema.columns where table_schema = ? and  table_name = ?"
+	sql := "select column_name, Data_type, character_maximum_length,column_key,column_comment from information_schema.columns where table_schema = ? and  table_name = ?"
 	rows, err := db.Query(sql, dbname, tbl.Name)
 	if err != nil {
 		panic(fmt.Errorf("GetAllTables err: %v", err))
@@ -58,5 +59,8 @@ func GetTable(dbname string, tbl *Table) {
 			Comment: string(comment),
 		}
 		tbl.Cols = append(tbl.Cols, *col)
+		if col.Key == "PRI" {
+			tbl.Pks = append(tbl.Pks, *col)
+		}
 	}
 }
