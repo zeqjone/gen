@@ -25,6 +25,8 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "cfgfile", "", "设置配置文件地址，默认在用户home目录下")
 }
+
+// initConfig 工具初始化，并写入配置文件
 func initConfig() {
 	if cfgFile == "" {
 		home, err := homedir.Dir()
@@ -71,9 +73,7 @@ func initConfig() {
 			fmt.Println("第一次使用请先指定 gen init 配置数据库连接字符串， 否则不能使用")
 			return
 		}
-		repo.NewDB(&repo.MysqlCfg{
-			Dsn: dsn,
-		})
+		fmt.Println("正在使用的数据库连接信息：", dsn)
 	} else {
 		fmt.Println(err.Error())
 	}
@@ -95,6 +95,7 @@ func Execute() {
 	}
 }
 
+// fmtTableModel 格式化生成的 go 文件
 func fmtTableModel(f string) {
 	cmd := exec.Command("goimports", "-w", f)
 	err := cmd.Run()
@@ -103,6 +104,7 @@ func fmtTableModel(f string) {
 	}
 }
 
+// SaveGoStruct 将表接口映射到 go struct
 func SaveGoStruct(tbls []*repo.Table) {
 	str := &strings.Builder{}
 	str.WriteString("// desc: code generate by tools\n")
@@ -132,6 +134,7 @@ func SaveGoStruct(tbls []*repo.Table) {
 	fmt.Println("table model file finished")
 }
 
+// GetColDesp 将数据库的表字段映射到结构体的字段
 func GetColDesp(col repo.Column) string {
 	cs := ""
 	orm := viper.GetString(conf.MysqlOrm)
@@ -160,6 +163,7 @@ func GetColDesp(col repo.Column) string {
 	return cs
 }
 
+// GetTableNameFunc 生成的结构体方法
 func GetTableNameFunc(tn string) string {
 	funcTn := fmt.Sprintf("func (ins *%s) TableName () string {\n return \"%s\"\n}\n", utils.Snake2Pascal(tn), tn)
 	funcPk := fmt.Sprintf("func(ins *%s) {}\n", tn)

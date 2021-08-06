@@ -15,6 +15,8 @@ var (
 	db     string
 	tables string
 )
+
+// 导出指令
 var exportCmd = &cobra.Command{
 	Use:   "export",
 	Short: "export go structor file from mysql",
@@ -59,6 +61,7 @@ var exportCmd = &cobra.Command{
 	},
 }
 
+// init
 func init() {
 	rootCmd.AddCommand(exportCmd)
 

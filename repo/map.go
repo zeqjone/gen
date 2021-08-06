@@ -1,5 +1,6 @@
 package repo
 
+// GetGoType 将数据库的字段类型映射到 go 的类型
 func GetGoType(s string) string {
 	var gs string
 	switch s {

@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// 配置工具指令
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "init gen ",
@@ -22,6 +23,7 @@ var initCmd = &cobra.Command{
 	},
 }
 
+// init 定义 init 指令
 func init() {
 	initCmd.Flags().StringP(conf.MysqlDsn, "c", "root:123456@tcp(127.0.0.1:3306)/test", "to connect mysql for getting the structrue of db")
 	viper.BindPFlag(conf.MysqlDsn, initCmd.Flags().Lookup(conf.MysqlDsn))
