@@ -6,6 +6,7 @@ import (
 )
 
 type Table struct {
+	Schema  string
 	Name    string
 	Comment string
 	Cols    []Column
@@ -31,7 +32,7 @@ func GetAllTables(dbname string) []*Table {
 	for rows.Next() {
 		var tn, tc string
 		rows.Scan(&tn, &tc)
-		tbls = append(tbls, &Table{Name: tn, Comment: tc})
+		tbls = append(tbls, &Table{Name: tn, Comment: tc, Schema: dbname})
 	}
 	return tbls
 }
