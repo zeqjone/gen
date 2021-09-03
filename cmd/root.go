@@ -99,7 +99,7 @@ func Execute() {
 
 // fmtTableModel 格式化生成的 go 文件
 func fmtTableModel(f string) {
-	cmd := exec.Command("goimports", "-w", f)
+	cmd := exec.Command("gofmt", "-w", f)
 	err := cmd.Run()
 	if err != nil {
 		fmt.Printf("fmt err22: %v\n\n", err)
