@@ -20,7 +20,7 @@ var (
 var exportCmd = &cobra.Command{
 	Use:   "export",
 	Short: "export go structor file from mysql",
-	Long:  "export go structure file from mysql",
+	Long:  "从 mysql 数据库里导出 go 结构体文件",
 	Run: func(c *cobra.Command, args []string) {
 		if repo.Ins() == nil {
 			fmt.Println("请先执行 init 完成必须的配置")
@@ -65,7 +65,7 @@ var exportCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(exportCmd)
 
-	exportCmd.Flags().StringVarP(&tables, "table", "t", "", "指定表导出")
+	exportCmd.Flags().StringVarP(&tables, "table", "t", "", "指定表导出,表名之间用英文逗号分割")
 	exportCmd.Flags().StringVarP(&db, "dbname", "n", "", "指定数据库导出")
 
 }

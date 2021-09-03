@@ -12,7 +12,7 @@ import (
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "init gen ",
-	Long:  "init gen with project config, such as db,output dir etc",
+	Long:  "初始化 gen 配置文件，可以配置数据库连接DSN(data source name)，映射输出的go文件的地址，指定文件的命名空间等等",
 	Run: func(c *cobra.Command, args []string) {
 		fmt.Printf("init args: %v\n", viper.GetString("dsn"))
 		// 将配置写入配置文件
@@ -25,17 +25,17 @@ var initCmd = &cobra.Command{
 
 // init 定义 init 指令
 func init() {
-	initCmd.Flags().StringP(conf.MysqlDsn, "c", "root:123456@tcp(127.0.0.1:3306)/test", "to connect mysql for getting the structrue of db")
+	initCmd.Flags().StringP(conf.MysqlDsn, "c", "root:123456@tcp(127.0.0.1:3306)/test", "数据库连接字符串，目前仅支持mysql")
 	viper.BindPFlag(conf.MysqlDsn, initCmd.Flags().Lookup(conf.MysqlDsn))
-	initCmd.Flags().StringP(conf.MysqlTables, "t", "", "to connect mysql for getting the structrue of db")
+	initCmd.Flags().StringP(conf.MysqlTables, "t", "", "配置导出结构体的数据库表信息，若为空，则导出数据库里所有的表；`,`多个表名之间的分隔符")
 	viper.BindPFlag(conf.MysqlTables, initCmd.Flags().Lookup(conf.MysqlTables))
 
-	initCmd.Flags().StringP(conf.OutputDir, "d", "table", "指定 go structure 存放路径")
+	initCmd.Flags().StringP(conf.OutputDir, "d", "table", "导出的结构体存放的位置，一般放在 table 目录下")
 	viper.BindPFlag(conf.OutputDir, initCmd.Flags().Lookup(conf.OutputDir))
 	initCmd.Flags().StringP(conf.OutputNameSpace, "n", "table", "指定 go structure 文件的命名空间")
 	viper.BindPFlag(conf.OutputNameSpace, initCmd.Flags().Lookup(conf.OutputNameSpace))
 
-	initCmd.Flags().StringP(conf.MysqlOrm, "m", "gorm", "指定驱动mysql 的orm，支持 gorm、 beego")
+	initCmd.Flags().StringP(conf.MysqlOrm, "m", "gorm", "指定驱动mysql 的orm，目前结构体支持 gorm，达梦。结构体上的方法仅支持gorm")
 	viper.BindPFlag(conf.MysqlOrm, initCmd.Flags().Lookup(conf.MysqlOrm))
 
 	rootCmd.AddCommand(initCmd)

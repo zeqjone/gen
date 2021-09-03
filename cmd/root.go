@@ -73,7 +73,6 @@ func initConfig() {
 			fmt.Println("第一次使用请先指定 gen init 配置数据库连接字符串， 否则不能使用")
 			return
 		}
-		fmt.Println("正在使用的数据库连接信息：", dsn)
 		repo.NewDB(&repo.MysqlCfg{
 			Dsn: dsn,
 		})
