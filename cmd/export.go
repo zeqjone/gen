@@ -23,8 +23,14 @@ var exportCmd = &cobra.Command{
 	Long:  "从 mysql 数据库里导出 go 结构体文件",
 	Run: func(c *cobra.Command, args []string) {
 		if repo.Ins() == nil {
-			fmt.Println("请先执行 init 完成必须的配置")
-			return
+			dsn := viper.GetString(conf.MysqlDsn)
+			if dsn == "" {
+				fmt.Println("请先执行 init 完成必须的配置")
+				return
+			}
+			repo.NewDB(&repo.MysqlCfg{
+				Dsn: dsn,
+			})
 		}
 		tbls := viper.GetStringSlice(conf.MysqlTables)
 		if tables != "" {

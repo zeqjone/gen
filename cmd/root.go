@@ -73,9 +73,9 @@ func initConfig() {
 			fmt.Println("第一次使用请先指定 gen init 配置数据库连接字符串， 否则不能使用")
 			return
 		}
-		repo.NewDB(&repo.MysqlCfg{
-			Dsn: dsn,
-		})
+		// repo.NewDB(&repo.MysqlCfg{
+		// 	Dsn: dsn,
+		// })
 	} else {
 		fmt.Println(err.Error())
 	}
@@ -84,7 +84,7 @@ func initConfig() {
 var rootCmd = &cobra.Command{
 	Use:   "gen",
 	Short: "to gen to struct file from mysql",
-	Long:  "to gen go struct file from mysql",
+	Long:  "根据 mysql 数据库的表结构，生成 go 结构体文件",
 	Run: func(c *cobra.Command, args []string) {
 		fmt.Printf("args: %v", args)
 	},
