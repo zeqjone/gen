@@ -8,12 +8,13 @@
 - 如果本地没有 goimports, 则请下载 ```go get -u golang.org/x/tools/cmd/goimports```
 - 执行 ```go build -o gen main.go``` 构建可执行文件
 - ```gen -h``` 查看指令集
+- 所有的指令集类似 git 指令格式
 
 ## 版本规划
 
-- [x] 根据配置文件，支持主流的 ORM 库，gorm
+- [x] 根据配置文件，支持主流的 ORM 库，默认 gorm
 - [ ] 根据配置文件，支持主流的 orm 库，beego
-- [ ] 支持mysql之外的数据库
+- [ ] 支持达梦数据库，ongoing
 
 ## 联系
 
