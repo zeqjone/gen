@@ -1,6 +1,7 @@
-# mysql to go model
+# mysql to go struct
 
-根据数据库表结构生成 go 模型的工具
+该项目是一个根据数据库表结构生成 go struct 结构体文件的工具。 目前支持近支持 mysql，达梦数据库的模型生成，后续支持CRUD方法实现。
+生成的 go 数据库结构体定义配合 ORM 库，比如GORM，XORM，ZORM，实现对数据的CRUD操作
 
 ## 使用方法
 
@@ -17,7 +18,7 @@
 - [x] 根据配置文件，支持主流的 ORM 库，默认 gorm
 - [ ] 根据配置文件，支持主流的 orm 库，beego
 - [x] go format 仅格式化生成的文件
-- [ ] 增加达梦数据库配置
+- [x] 增加达梦数据库配置
 - [ ] 支持达梦数据库，ongoing
 
 ## 联系
