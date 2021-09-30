@@ -8,8 +8,10 @@ func GetGoType(s string) string {
 		gs = "int"
 	case "bigint":
 		gs = "int64"
-	case "longtext", "text", "char", "enum", "mediumtext", "varchar", "nvarchar", "json", "blob", "longblob":
+	case "longtext", "text", "char", "enum", "mediumtext", "varchar", "nvarchar", "json":
 		gs = "string"
+	case "blob", "longblob", "tinyblob", "varbinary", "binary", "mediumblob":
+		gs = "[]byte"
 	case "datetime", "timestamp", "time", "date":
 		gs = "time.Time"
 	case "decimal", "float", "real":
