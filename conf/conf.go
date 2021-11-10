@@ -1,12 +1,14 @@
 package conf
 
 var (
-	MysqlDsn        string = "mysql.dsn"
-	MysqlTables     string = "mysql.tables"
-	MysqlOrm        string = "mysql.orm"
-	DmDbName        string = "dm.dbname"
-	OutputDir       string = "output.dir"
-	OutputNameSpace string = "output.namespace"
+	MysqlDsn    string = "mysql.dsn"
+	MysqlTables string = "mysql.tables"
+	MysqlOrm    string = "mysql.orm"
+	DmDbName    string = "dm.dbname"
+
+	OutputDir           string = "output.dir"
+	OutputNameSpace     string = "output.namespace"
+	TableNameWithSchema string = "output.tableNameWithSchema"
 )
 
 var ConfigKeys = []string{
@@ -16,4 +18,5 @@ var ConfigKeys = []string{
 	OutputDir,
 	OutputNameSpace,
 	DmDbName,
+	TableNameWithSchema,
 }

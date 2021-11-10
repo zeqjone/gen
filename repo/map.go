@@ -12,7 +12,9 @@ func GetGoType(s string) string {
 		gs = "string"
 	case "blob", "longblob", "tinyblob", "varbinary", "binary", "mediumblob":
 		gs = "[]byte"
-	case "datetime", "timestamp", "time", "date":
+	case "datetime", "timestamp", "time":
+		gs = "time.Time"
+	case "date":
 		gs = "time.Time"
 	case "decimal", "float", "real":
 		gs = "float32"

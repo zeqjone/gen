@@ -33,9 +33,11 @@ var exportCmd = &cobra.Command{
 			})
 		}
 		tbls := viper.GetStringSlice(conf.MysqlTables)
+		fmt.Printf("tbls viper: %#v\n", tbls)
 		if tables != "" {
 			tbls = strings.Split(tables, ",")
 		}
+		fmt.Printf("tbls tables: %#v\n", tbls)
 		var connstr = viper.GetString(conf.MysqlDsn)
 		if connstr != "" {
 			c, err := mysql.ParseDSN(connstr)

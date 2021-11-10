@@ -168,7 +168,21 @@ func GetColDesp(col repo.Column) string {
 // GetTableNameFunc 生成的结构体方法
 func GetTableNameFunc(t *repo.Table) string {
 	tablename := fmt.Sprintf("func (ins *%s) TableName () string {\n return \"%s\"\n}", utils.Snake2Pascal(t.Name), t.Name)
-	getTableName := fmt.Sprintf("func(ins *%s) GetTableName()string{\n return \"%s.%s\"\n}", utils.Snake2Pascal(t.Name), strings.ToUpper(t.Schema), strings.ToUpper(t.Name))
+	getTableName := ""
+	// GetTableName 这个方法在返回数据库表名的时候，是否携带返回schema的名字
+	if strings.ToLower(viper.GetString(conf.TableNameWithSchema)) == "true" {
+		getTableName = fmt.Sprintf("func(ins *%s) GetTableName() string{\n return \"%s%s\"\n}",
+			utils.Snake2Pascal(t.Name),
+			strings.ToUpper(t.Schema)+".",
+			strings.ToUpper(t.Name),
+		)
+	} else {
+		getTableName = fmt.Sprintf("func(ins *%s) GetTableName() string{\n return \"%s%s\"\n}",
+			utils.Snake2Pascal(t.Name),
+			"",
+			strings.ToUpper(t.Name),
+		)
+	}
 	pks := make([]string, 0)
 	for _, c := range t.Pks {
 		pks = append(pks, c.Name)

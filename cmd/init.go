@@ -14,7 +14,6 @@ var initCmd = &cobra.Command{
 	Short: "init gen ",
 	Long:  "初始化 gen 配置文件，可以配置数据库连接DSN(data source name)，映射输出的go文件的地址，指定文件的命名空间等等",
 	Run: func(c *cobra.Command, args []string) {
-		fmt.Printf("init args: %v\n", viper.GetString("dsn"))
 		// 将配置写入配置文件
 		err := viper.WriteConfig()
 		if err != nil {
@@ -34,6 +33,8 @@ func init() {
 	viper.BindPFlag(conf.OutputDir, initCmd.Flags().Lookup(conf.OutputDir))
 	initCmd.Flags().StringP(conf.OutputNameSpace, "n", "table", "指定 go structure 文件的命名空间")
 	viper.BindPFlag(conf.OutputNameSpace, initCmd.Flags().Lookup(conf.OutputNameSpace))
+	initCmd.Flags().StringP(conf.TableNameWithSchema, "s", "true", "返回数据库 table 名字的时候，是否携带返回数据库的名字")
+	viper.BindPFlag(conf.TableNameWithSchema, initCmd.Flags().Lookup(conf.TableNameWithSchema))
 
 	initCmd.Flags().StringP(conf.MysqlOrm, "m", "gorm", "指定驱动mysql 的orm，目前结构体支持 gorm，达梦。结构体上的方法仅支持gorm")
 	viper.BindPFlag(conf.MysqlOrm, initCmd.Flags().Lookup(conf.MysqlOrm))
